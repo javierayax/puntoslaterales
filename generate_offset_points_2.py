@@ -39,14 +39,19 @@ if count != 1:
 
 
 def calculate_points(_cutter, _value):
-    if _value > _cutter.length:
-        _value = _cutter.length*0.5  # La mitad de la longitud de la linea
-    _buffer = arcpy.PointGeometry(_cutter.centroid).buffer(_value)
-    _polys = _buffer.cut(_cutter)
     _points = []
-    for _poly in _polys:
-        _points.append(_poly.centroid)
-    # arcpy.AddMessage(_points)
+    try:
+        if _value > _cutter.length:
+            _value = _cutter.length*0.2  # 20% de la longitud de la linea
+        _buffer = arcpy.PointGeometry(_cutter.centroid).buffer(_value)
+        _polys = _buffer.cut(_cutter)
+        for _poly in _polys:
+            _points.append(_poly.centroid)
+    except Exception as _error:
+        try:
+            _points = calculate_points(_cutter, 1)
+        except Exception as _error:
+            print(_error)
     return _points
 
 
